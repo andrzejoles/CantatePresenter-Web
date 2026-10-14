@@ -641,6 +641,7 @@ document.getElementById('btnUploadBackup').addEventListener('click', async () =>
 document.getElementById('btnImport').addEventListener('click', () => openModal('importModal'));
 
 document.getElementById('btnConfirmImport').addEventListener('click', async () => {
+  const btn = document.getElementById('btnConfirmImport');
   const fileInput = document.getElementById('importFileInput');
   const rawText = document.getElementById('importRawText').value;
 
@@ -654,22 +655,33 @@ document.getElementById('btnConfirmImport').addEventListener('click', async () =
     return;
   }
 
-  const res = await fetch('/api/songs/parse-raw', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Cantate-Request': '1' },
-    body: JSON.stringify({ rawText: textToParse })
-  });
-  const data = await res.json();
-  if (data.success && data.song) {
-    await fetch('/api/songs', {
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Przetwarzanie...';
+
+  try {
+    const res = await fetch('/api/songs/parse-raw', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Cantate-Request': '1' },
-      body: JSON.stringify(data.song)
+      body: JSON.stringify({ rawText: textToParse })
     });
-    await loadSongs();
-    closeModal('importModal');
-    renderSongsList();
-    alert(`Zaimportowano: ${data.song.title}`);
+    const data = await res.json();
+    if (data.success && data.song) {
+      await fetch('/api/songs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Cantate-Request': '1' },
+        body: JSON.stringify(data.song)
+      });
+      await loadSongs();
+      closeModal('importModal');
+      renderSongsList();
+      alert(`Zaimportowano: ${data.song.title}`);
+    }
+  } catch (err) {
+    alert('Wystąpił błąd podczas importu.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 });
 
