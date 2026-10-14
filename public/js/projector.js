@@ -105,11 +105,26 @@ window.addEventListener('mousemove', () => {
   }, 2000);
 });
 
+// Toggle fullscreen on double click or hint click
+const fsHint = document.getElementById('fsHint');
+if (fsHint) {
+  fsHint.addEventListener('click', toggleFullscreen);
+}
+window.addEventListener('dblclick', toggleFullscreen);
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
 // Keyboard navigation
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     if (document.fullscreenElement) {
-      document.exitFullscreen();
+      document.exitFullscreen().catch(() => {});
     } else {
       window.close();
     }

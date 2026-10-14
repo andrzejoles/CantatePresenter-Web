@@ -354,8 +354,13 @@ function setupKeyListeners() {
       liveState.isLive = true;
       broadcastState();
     } else if (e.key === 'Escape') {
-      liveState.isLive = false;
-      broadcastState();
+      const openModal = document.querySelector('.modal-backdrop[style*="display: flex"], .modal-backdrop[style*="display:flex"]');
+      if (openModal) {
+        openModal.style.display = 'none';
+      } else {
+        liveState.isLive = false;
+        broadcastState();
+      }
     }
   });
 }
