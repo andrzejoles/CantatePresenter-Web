@@ -336,6 +336,13 @@ document.getElementById('zoomResetBtn').addEventListener('click', () => setUiSca
 // ===================================================================
 function setupKeyListeners() {
   window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 't' || e.key === 'T')) {
+      e.preventDefault();
+      const btn = document.getElementById('btnQuickText');
+      if (btn) btn.click();
+      return;
+    }
+
     if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
     if ([' ', 'ArrowRight', 'ArrowDown'].includes(e.key)) {
@@ -552,6 +559,82 @@ document.getElementById('editorForm').addEventListener('submit', async (e) => {
   closeModal('editorModal');
   renderSongsList();
 });
+
+// Quick Text Modal (Ad-hoc presentation without saving to database)
+const btnQuickText = document.getElementById('btnQuickText');
+if (btnQuickText) {
+  btnQuickText.addEventListener('click', () => {
+    document.getElementById('quickTextTitle').value = 'Szybki tekst';
+    document.getElementById('quickTextContent').value = '';
+    openModal('quickTextModal');
+    setTimeout(() => document.getElementById('quickTextContent').focus(), 80);
+  });
+}
+
+const quickTextContent = document.getElementById('quickTextContent');
+if (quickTextContent) {
+  quickTextContent.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('quickTextForm').dispatchEvent(new Event('submit'));
+    }
+  });
+}
+
+const quickTextForm = document.getElementById('quickTextForm');
+if (quickTextForm) {
+  quickTextForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = document.getElementById('quickTextTitle').value.trim() || 'Szybki tekst';
+    const content = document.getElementById('quickTextContent').value.trim();
+    if (!content) return;
+
+    let slides = [];
+    try {
+      const parsedRes = await fetch('/api/songs/parse-raw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Cantate-Request': '1' },
+        body: JSON.stringify({ raw: content })
+      });
+      if (parsedRes.ok) {
+        const data = await parsedRes.json();
+        slides = data.slides || [];
+      }
+    } catch (err) {
+      console.warn('Fallback to local slide parsing', err);
+    }
+
+    if (!slides || slides.length === 0) {
+      const parts = content.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+      slides = parts.map((part, i) => ({
+        id: 's-' + (i + 1),
+        label: `Slajd ${i + 1}`,
+        text: part.trim(),
+        type: 'Zwrotka'
+      }));
+    }
+
+    const quickSong = {
+      id: 'temp-' + Date.now(),
+      title: title,
+      author: 'Tymczasowy',
+      key: '',
+      tags: ['Szybki tekst'],
+      rawLyrics: content,
+      slides: slides
+    };
+
+    currentSong = quickSong;
+    currentSlideIndex = 0;
+    liveState.isLive = true;
+    liveState.isBlackScreen = false;
+    liveState.isClearText = false;
+
+    closeModal('quickTextModal');
+    renderCurrentSong();
+    broadcastState();
+  });
+}
 
 // Settings Modal & Logo Gallery
 document.getElementById('btnSettings').addEventListener('click', () => {

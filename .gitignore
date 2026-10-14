@@ -1,3 +1,7 @@
+# Python
+__pycache__/
+*.pyc
+
 # Node & NPM
 node_modules/
 npm-debug.log*

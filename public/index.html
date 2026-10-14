@@ -34,6 +34,7 @@
             </div>
 
             <button class="btn btn-primary" id="btnNewSong">+ Nowa pieśń</button>
+            <button class="btn" id="btnQuickText" style="background:#f59e0b; color:#ffffff; font-weight:600;" title="Wyświetl natychmiast tekst/ogłoszenie bez zapisywania w bazie (Ctrl/⌘+T)">⚡ Szybki tekst</button>
             <button class="btn" id="btnImport">Importuj...</button>
             <button class="btn" id="btnExport">Eksportuj...</button>
             <button class="btn" id="btnBackup">💾 Kopia zapasowa</button>
@@ -273,6 +274,39 @@
                 <!-- Content -->
             </div>
         </div>
+    </div>
+</div>
+
+<!-- 6. Quick Text Modal (Ad-hoc presentation without saving) -->
+<div class="modal-overlay" id="quickTextModal">
+    <div class="modal-content" style="max-width:580px;">
+        <div class="modal-header">
+            <h3 class="modal-title" style="color:#f59e0b;">⚡ Szybki tekst na żywo</h3>
+            <button class="close-btn" data-close="quickTextModal">&times;</button>
+        </div>
+        <p style="font-size:12px; color:#94a3b8; margin-top:0; margin-bottom:12px;">
+            Wpisz tekst lub ogłoszenie — zostanie wyświetlone na projektorze od razu, bez zapisywania w bazie pieśni.
+        </p>
+        <form id="quickTextForm">
+            <div style="margin-bottom:12px;">
+                <label style="font-size:11px; font-weight:600; color:#cbd5e1;">Tytuł / nagłówek (opcjonalny):</label>
+                <input type="text" id="quickTextTitle" class="search-box" style="margin:4px 0 0 0;" value="Szybki tekst" placeholder="np. Ogłoszenie, Słowo na dziś...">
+            </div>
+
+            <div style="margin-bottom:12px;">
+                <label style="font-size:11px; font-weight:600; color:#cbd5e1;">Treść do wyświetlenia (puste linie dzielą na slajdy):</label>
+                <textarea id="quickTextContent" rows="10" placeholder="Wpisz lub wklej treść do wyświetlenia..." required style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#ffffff; font-family:inherit; font-size:13px; padding:10px; margin-top:4px;"></textarea>
+            </div>
+
+            <div style="font-size:11px; color:#64748b; margin-bottom:12px;">
+                Wskazówka: Naciśnij Ctrl+Enter lub kliknij 'Wyświetl teraz', aby rozpocząć prezentację.
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button type="button" class="btn" data-close="quickTextModal">Anuluj</button>
+                <button type="submit" class="btn" style="background:#f59e0b; color:#ffffff; font-weight:bold;">Wyświetl teraz ⚡</button>
+            </div>
+        </form>
     </div>
 </div>
 
