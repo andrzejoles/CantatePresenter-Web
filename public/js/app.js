@@ -127,7 +127,7 @@ function renderSongsList() {
   const filtered = songs.filter(s => {
     if (!q) return true;
     return foldString(s.title).includes(q) || foldString(s.author).includes(q) || foldString(s.rawLyrics).includes(q);
-  });
+  }).sort((a, b) => (a.title || '').trim().localeCompare((b.title || '').trim(), 'pl', { sensitivity: 'base', numeric: true }));
 
   songList.innerHTML = '';
   filtered.forEach(song => {
