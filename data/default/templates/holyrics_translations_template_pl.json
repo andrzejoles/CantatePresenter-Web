@@ -1,0 +1,238 @@
+{
+  "schema": "holyrics-mac-i18n-v1",
+  "sourceLanguage": "pl",
+  "targetLanguageCode": "wpisz_kod_np_fr",
+  "targetLanguageName": "Wpisz nazwę języka (np. Français)",
+  "targetLanguageFlag": "🇫🇷",
+  "instructionsForAI": "Dla każdego elementu w liście 'translations' przetłumacz wartość w polu 'translation' na język docelowy. Pole 'context' wyjaśnia przeznaczenie tekstu w interfejsie macOS (np. przycisk akcji, zakładka, komunikat), pomagając dobrać właściwą formę gramatyczną. Zachowaj zwięzłość i spójność.",
+  "translations": [
+    {
+      "key": "appTitle",
+      "sourceText": "Prezenter Pieśni",
+      "translation": "",
+      "context": "Główny tytuł okna programu na pasku tytułu i w nagłówkach aplikacji"
+    },
+    {
+      "key": "libraryTab",
+      "sourceText": "Biblioteka pieśni",
+      "translation": "",
+      "context": "Nazwa pierwszej zakładki bocznej: Biblioteka wszystkich zapisanych pieśni"
+    },
+    {
+      "key": "planTab",
+      "sourceText": "Plan nabożeństwa",
+      "translation": "",
+      "context": "Nazwa drugiej zakładki bocznej: Aktywny plan pieśni na nabożeństwo/mszę"
+    },
+    {
+      "key": "searchPlaceholder",
+      "sourceText": "Szukaj w tytule, autorze i tekście...",
+      "translation": "",
+      "context": "Tekst podpowiedzi (placeholder) w pasku wyszukiwarki pieśni"
+    },
+    {
+      "key": "newSong",
+      "sourceText": "Nowa pieśń",
+      "translation": "",
+      "context": "Przycisk dodania nowej pieśni do bazy danych (+ Nowa pieśń)"
+    },
+    {
+      "key": "editSong",
+      "sourceText": "Edycja pieśni",
+      "translation": "",
+      "context": "Przycisk lub nagłówek edycji tekstu, zwrotek i chwytów wybranej pieśni (Edycja pieśni)"
+    },
+    {
+      "key": "importExport",
+      "sourceText": "Import/Eksport",
+      "translation": "",
+      "context": "Przycisk otwierający okno importu plików (.mufl, .txt) i eksportu pieśni"
+    },
+    {
+      "key": "online",
+      "sourceText": "Online",
+      "translation": "",
+      "context": "Przycisk otwierający wyszukiwarkę pieśni w internecie"
+    },
+    {
+      "key": "titleAuthor",
+      "sourceText": "Tytuł/Autor",
+      "translation": "",
+      "context": "Przycisk wyszukiwarki i uzupełniania brakującego autora/tytułu utworu"
+    },
+    {
+      "key": "present",
+      "sourceText": "Prezentuj",
+      "translation": "",
+      "context": "Główny przycisk projekcji: wyświetla slajd pieśni na żywo na projektorze"
+    },
+    {
+      "key": "standby",
+      "sourceText": "Standby",
+      "translation": "",
+      "context": "Przycisk planszy czuwania / wygaszacza z logo programu"
+    },
+    {
+      "key": "blackScreen",
+      "sourceText": "Czarny",
+      "translation": "",
+      "context": "Przycisk natychmiastowego zaciemnienia całego ekranu projekcji"
+    },
+    {
+      "key": "clearText",
+      "sourceText": "Czysty",
+      "translation": "",
+      "context": "Przycisk ukrycia tekstu pieśni z zachowaniem tła projekcji"
+    },
+    {
+      "key": "prevSlide",
+      "sourceText": "Poprzedni",
+      "translation": "",
+      "context": "Przycisk nawigacji: przejście do poprzedniego slajdu pieśni"
+    },
+    {
+      "key": "nextSlide",
+      "sourceText": "Następny",
+      "translation": "",
+      "context": "Przycisk nawigacji: przejście do następnego slajdu pieśni"
+    },
+    {
+      "key": "prevSong",
+      "sourceText": "Poprz. pieśń",
+      "translation": "",
+      "context": "Przycisk nawigacji: przejście do poprzedniej pieśni z planu"
+    },
+    {
+      "key": "nextSong",
+      "sourceText": "Nast. pieśń",
+      "translation": "",
+      "context": "Przycisk nawigacji: przejście do kolejnej pieśni z planu"
+    },
+    {
+      "key": "chorus",
+      "sourceText": "Refren",
+      "translation": "",
+      "context": "Przycisk szybkiego skoku do Refrenu pieśni"
+    },
+    {
+      "key": "verse",
+      "sourceText": "Zwrotka",
+      "translation": "",
+      "context": "Etykieta oznaczająca Zwrotkę pieśni"
+    },
+    {
+      "key": "bridge",
+      "sourceText": "Bridge / Mostek",
+      "translation": "",
+      "context": "Etykieta sekcji muzycznej Bridge / Mostek"
+    },
+    {
+      "key": "coda",
+      "sourceText": "Coda",
+      "translation": "",
+      "context": "Etykieta sekcji muzycznej Coda / Koda (zwieńczenie utworu)"
+    },
+    {
+      "key": "interlude",
+      "sourceText": "Przejście",
+      "translation": "",
+      "context": "Etykieta sekcji muzycznej Przejście / Solo instrumentalne"
+    },
+    {
+      "key": "ending",
+      "sourceText": "Zakończenie",
+      "translation": "",
+      "context": "Etykieta sekcji muzycznej Zakończenie / Outro"
+    },
+    {
+      "key": "chords",
+      "sourceText": "Chwyty gitarowe",
+      "translation": "",
+      "context": "Etykieta i przycisk zakładki akordów i chwytów gitarowych"
+    },
+    {
+      "key": "settings",
+      "sourceText": "Ustawienia",
+      "translation": "",
+      "context": "Przycisk otwierający okno preferencji i konfiguracji programu"
+    },
+    {
+      "key": "dictation",
+      "sourceText": "Dyktowanie głosem",
+      "translation": "",
+      "context": "Przycisk dyktowania głosem (zamiana mowy na tekst)"
+    },
+    {
+      "key": "appLanguage",
+      "sourceText": "Język aplikacji",
+      "translation": "",
+      "context": "Etykieta wyboru języka interfejsu programu w ustawieniach"
+    },
+    {
+      "key": "searchLanguage",
+      "sourceText": "Język wyszukiwania pieśni",
+      "translation": "",
+      "context": "Etykieta wyboru domyślnego języka przeszukiwania pieśni w sieci"
+    },
+    {
+      "key": "dictationLanguage",
+      "sourceText": "Język dyktowania głosem",
+      "translation": "",
+      "context": "Etykieta wyboru języka rozpoznawania mowy dla dyktowania"
+    },
+    {
+      "key": "projectorActive",
+      "sourceText": "Projektor: Aktywny",
+      "translation": "",
+      "context": "Status informujący, że zewnętrzny ekran projekcji jest podłączony"
+    },
+    {
+      "key": "testWindowActive",
+      "sourceText": "Okno testowe",
+      "translation": "",
+      "context": "Przycisk otwarcia podglądu projekcji w osobnym oknie testowym"
+    },
+    {
+      "key": "uiScale",
+      "sourceText": "Rozmiar UI",
+      "translation": "",
+      "context": "Etykieta suwaka powiększenia całego interfejsu (skalowanie UI)"
+    },
+    {
+      "key": "bottomBarHeight",
+      "sourceText": "Wysokość dolnego paska",
+      "translation": "",
+      "context": "Etykieta suwaka wysokości dolnego paska sterowania"
+    },
+    {
+      "key": "songsInLibrary",
+      "sourceText": "pieśni w bibliotece",
+      "translation": "",
+      "context": "Tekst w stopce biblioteki: liczba pieśni w bibliotece"
+    },
+    {
+      "key": "noSongsFound",
+      "sourceText": "Nie znaleziono pieśni",
+      "translation": "",
+      "context": "Komunikat wyświetlany, gdy żadna pieśń nie pasuje do wyszukiwania"
+    },
+    {
+      "key": "rawLyricsHint",
+      "sourceText": "Wskazówka: oddzielaj zwrotki pustą linią",
+      "translation": "",
+      "context": "Podpowiedź formatowania w edytorze tekstu pieśni"
+    },
+    {
+      "key": "save",
+      "sourceText": "Zapisz",
+      "translation": "",
+      "context": "Przycisk zatwierdzenia i zapisu danych"
+    },
+    {
+      "key": "cancel",
+      "sourceText": "Anuluj",
+      "translation": "",
+      "context": "Przycisk anulowania zmian i zamknięcia okna"
+    }
+  ]
+}

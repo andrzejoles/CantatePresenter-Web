@@ -1,0 +1,40 @@
+{
+  "appLanguage" : "pl",
+  "verticalAlignment" : "center",
+  "activeLogoId" : "equipes_notre_dame",
+  "selectedScreenIndex" : 1,
+  "fontFamily" : "Helvetica Neue",
+  "uiScale" : 1,
+  "standbyHtmlPath" : "",
+  "googleDrive" : {
+    "autoBackupOnExit" : false,
+    "accountEmail" : "andrzej.oles.tel@gmail.com",
+    "accessToken" : "",
+    "isEnabled" : false,
+    "targetFolder" : "CantatePresenter_Backups",
+    "clientSecret" : "",
+    "clientId" : "",
+    "refreshToken" : ""
+  },
+  "textAlignment" : "center",
+  "isBold" : true,
+  "marginPercent" : 0.07,
+  "lineSpacingFactor" : 1.15,
+  "bottomBarHeight" : 52,
+  "textColorHex" : "#FFFFFF",
+  "isWindowedPreviewEnabled" : false,
+  "hasShadow" : true,
+  "onlineSearchLanguage" : "pl",
+  "dictationLanguage" : "pl-PL",
+  "backgroundColorHex" : "#000000",
+  "shortcuts" : {
+    "nextSongKey" : 30,
+    "startPresentationKey" : 36,
+    "nextSlideKey" : 49,
+    "stopPresentationKey" : 53,
+    "blackScreenKey" : 11,
+    "prevSongKey" : 33,
+    "prevSlideKey" : 123,
+    "clearTextKey" : 8
+  }
+}

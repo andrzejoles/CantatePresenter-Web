@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  cantate-presenter:
+    build: .
+    container_name: cantate-presenter
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - TRUST_PROXY=true
+      - SESSION_SECRET=wygeneruj_wlasny_klucz_min_32_znaki
+    volumes:
+      - ./data:/app/data

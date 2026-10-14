@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CantatePresenter Web — Pulpit Operatora</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+<div id="appRoot">
+    <!-- TOP TOOLBAR -->
+    <header class="top-toolbar">
+        <div class="brand-section">
+            <span style="font-size: 20px;">🎵</span>
+            <h1 class="brand-title">CantatePresenter</h1>
+            <span class="brand-version">v1.0.0</span>
+            <div class="status-badge" id="screenBadge" style="display: none;">
+                <span style="display:inline-block; width:6px; height:6px; background:#10b981; border-radius:50%;"></span>
+                RZUTNIK POŁĄCZONY
+            </div>
+        </div>
+
+        <div class="toolbar-actions">
+            <!-- UI Scale Controls -->
+            <div style="display:flex; align-items:center; gap:4px; margin-right:12px;">
+                <span style="font-size:11px; color:#94a3b8;">Skala UI:</span>
+                <button class="btn btn-small" id="zoomOutBtn">-</button>
+                <span id="zoomLevelText" style="font-size:11px; font-weight:bold; min-width:36px; text-align:center;">100%</span>
+                <button class="btn btn-small" id="zoomInBtn">+</button>
+                <button class="btn btn-small" id="zoomResetBtn">Reset</button>
+            </div>
+
+            <button class="btn btn-primary" id="btnNewSong">+ Nowa pieśń</button>
+            <button class="btn" id="btnImport">Importuj...</button>
+            <button class="btn" id="btnExport">Eksportuj...</button>
+            <button class="btn" id="btnBackup">💾 Kopia zapasowa</button>
+            <button class="btn" id="btnOpenProjector">🖥️ Otwórz rzutnik</button>
+            <button class="btn" id="btnOpenStage">📱 Pulpit muzyka</button>
+            <button class="btn" id="btnSettings">⚙️ Ustawienia</button>
+            <button class="btn" id="btnHelp">❓ Pomoc</button>
+            <button class="btn btn-danger btn-small" id="btnLogout" title="Wyloguj z serwisu">Wyloguj</button>
+        </div>
+    </header>
+
+    <!-- 3-PANEL MAIN CONTENT -->
+    <main class="main-layout">
+        <!-- PANEL 1: SONGS LIBRARY -->
+        <section class="panel panel-left">
+            <input type="text" class="search-box" id="songSearch" placeholder="🔍 Szukaj pieśni, autora, słów...">
+            <ul class="song-list" id="songList">
+                <!-- Dynamically rendered -->
+            </ul>
+        </section>
+
+        <!-- PANEL 2: CURRENT SONG & SLIDE CARDS -->
+        <section class="panel panel-middle">
+            <div class="current-song-card">
+                <div>
+                    <h2 class="current-title" id="currentSongTitle">Wybierz pieśń z biblioteki</h2>
+                    <div class="current-meta" id="currentSongMeta"></div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn btn-small" id="btnEditSong">Edytuj pieśń</button>
+                </div>
+            </div>
+
+            <!-- Chords Toolbar -->
+            <div class="chords-toolbar" id="chordsBar" style="display: none;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:11px; font-weight:bold; color:#fef08a;">🎸 Chwyty:</span>
+                    <button class="btn btn-small" id="btnTransposeDown">-1 półton</button>
+                    <button class="btn btn-small" id="btnTransposeUp">+1 półton</button>
+                    <button class="btn btn-small" id="btnTransposeReset">Oryginał</button>
+                    <span id="transposeShiftLabel" style="font-size:11px; color:#38bdf8;">(0)</span>
+                </div>
+                <button class="btn btn-small" id="btnToggleChords">Zwiń chwyty</button>
+            </div>
+            <div id="chordsPreviewWrap" class="chords-sheet-preview" style="display: none;"></div>
+
+            <!-- Slide Cards Container -->
+            <div id="slideCardsContainer" style="display:flex; flex-direction:column; gap:10px;">
+                <!-- Dynamically rendered -->
+            </div>
+        </section>
+
+        <!-- PANEL 3: LIVE MONITOR & PROJECTOR CONTROLS -->
+        <section class="panel panel-right">
+            <div style="font-size:11px; font-weight:bold; color:#38bdf8; margin-bottom:8px;">
+                PODGLĄD NA ŻYWO (LIVE MONITOR)
+            </div>
+
+            <div class="live-monitor-box" id="liveMonitor">
+                <!-- Rendered Standby or Slide -->
+            </div>
+
+            <div class="next-slide-card">
+                <div style="font-size:11px; font-weight:bold; color:#94a3b8; margin-bottom:4px;">NASTĘPNY SLAJD:</div>
+                <div id="nextSlideText" style="font-size:12px; color:#cbd5e1; white-space:pre-line;">— Koniec pieśni —</div>
+            </div>
+
+            <!-- Projector Control Buttons -->
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:auto;">
+                <button class="btn btn-primary" id="btnLiveStart" style="height:36px; font-size:13px;">▶ Prezentuj na rzutniku (F5 / Enter)</button>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                    <button class="btn" id="btnBlackScreen">Czarny ekran (B)</button>
+                    <button class="btn" id="btnClearText">Ukryj tekst (C)</button>
+                </div>
+                <button class="btn btn-danger" id="btnStopPresentation">■ Zatrzymaj projekcję (ESC)</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- BOTTOM SHORTCUTS BAR -->
+    <footer class="bottom-bar">
+        <span><strong>Spacja / → / ↓:</strong> Następny slajd</span>
+        <span><strong>← / ↑:</strong> Poprzedni slajd</span>
+        <span><strong>B:</strong> Czarny ekran</span>
+        <span><strong>C:</strong> Ukryj tekst</span>
+        <span><strong>ESC:</strong> Wyjście z prezentacji</span>
+        <span><strong>F11:</strong> Pełny ekran rzutnika</span>
+    </footer>
+</div>
+
+<!-- =================================================================== -->
+<!-- MODALS -->
+<!-- =================================================================== -->
+
+<!-- 1. Song Editor Modal -->
+<div class="modal-overlay" id="editorModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="editorModalTitle">Edytor Pieśni</h3>
+            <button class="close-btn" data-close="editorModal">&times;</button>
+        </div>
+        <form id="editorForm">
+            <div style="display:grid; grid-template-columns: 2fr 1fr 80px; gap:12px; margin-bottom:12px;">
+                <div>
+                    <label style="font-size:11px; font-weight:600; color:#cbd5e1;">Tytuł:</label>
+                    <input type="text" id="editTitle" class="search-box" style="margin:0;" required>
+                </div>
+                <div>
+                    <label style="font-size:11px; font-weight:600; color:#cbd5e1;">Autor:</label>
+                    <input type="text" id="editAuthor" class="search-box" style="margin:0;">
+                </div>
+                <div>
+                    <label style="font-size:11px; font-weight:600; color:#cbd5e1;">Tonacja:</label>
+                    <input type="text" id="editKey" class="search-box" style="margin:0;">
+                </div>
+            </div>
+
+            <!-- Section Insert Buttons -->
+            <div style="margin-bottom:8px; display:flex; flex-wrap:wrap; gap:6px;">
+                <button type="button" class="btn btn-small insert-tag" data-tag="[Zwrotka]">+ [Zwrotka]</button>
+                <button type="button" class="btn btn-small btn-primary insert-tag" data-tag="[Refren]">+ [Refren]</button>
+                <button type="button" class="btn btn-small insert-tag" data-tag="[Coda]" style="background:#d97706;">+ [Coda]</button>
+                <button type="button" class="btn btn-small insert-tag" data-tag="[Bridge]" style="background:#7c3aed;">+ [Bridge]</button>
+                <button type="button" class="btn btn-small insert-tag" data-tag="[Przejście]" style="background:#059669;">+ [Przejście]</button>
+                <button type="button" class="btn btn-small insert-tag" data-tag="[Zakończenie]" style="background:#dc2626;">+ [Zakończenie]</button>
+            </div>
+
+            <textarea id="editLyrics" rows="12" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#ffffff; font-family:Consolas, monospace; font-size:13px; padding:10px;"></textarea>
+
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+                <button type="button" class="btn" data-close="editorModal">Anuluj</button>
+                <button type="submit" class="btn btn-primary">Zapisz pieśń</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 2. Settings Modal (Includes 23 Logo Gallery) -->
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">⚙️ Ustawienia Wyglądu i Planszy</h3>
+            <button class="close-btn" data-close="settingsModal">&times;</button>
+        </div>
+        <div style="margin-bottom:16px;">
+            <label style="font-weight:bold; font-size:13px; color:#38bdf8;">Wybierz logo dla planszy czuwania (23 propozycje):</label>
+            <div id="logoGalleryGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap:10px; max-height:260px; overflow-y:auto; margin-top:10px; padding:4px;">
+                <!-- Dynamically rendered -->
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; border-top:1px solid #334155; padding-top:14px;">
+            <div>
+                <label style="font-size:12px; font-weight:600;">Czcionka slajdów:</label>
+                <input type="text" id="settingFont" class="search-box" value="Segoe UI, sans-serif">
+            </div>
+            <div>
+                <label style="font-size:12px; font-weight:600;">Kolor tekstu slajdów:</label>
+                <input type="color" id="settingTextColor" value="#ffffff" style="width:100%; height:34px; background:#0f172a; border:1px solid #334155; border-radius:6px;">
+            </div>
+            <div>
+                <label style="font-size:12px; font-weight:600;">Kolor tła projekcji:</label>
+                <input type="color" id="settingBgColor" value="#000000" style="width:100%; height:34px; background:#0f172a; border:1px solid #334155; border-radius:6px;">
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; padding-top:20px;">
+                <input type="checkbox" id="settingBold" checked>
+                <label for="settingBold" style="font-size:12px;">Pogrubiony tekst (Bold)</label>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
+            <button class="btn btn-primary" id="btnSaveSettings">Zapisz ustawienia</button>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Backup Modal (Download & Upload without Google Drive) -->
+<div class="modal-overlay" id="backupModal">
+    <div class="modal-content" style="max-width:540px;">
+        <div class="modal-header">
+            <h3 class="modal-title">💾 Kopia Zapasowa (Backup)</h3>
+            <button class="close-btn" data-close="backupModal">&times;</button>
+        </div>
+        <p style="font-size:13px; color:#cbd5e1; line-height:1.4;">
+            Wszystkie pieśni, chwyty, plany nabożeństw, plansza startowa, wybrane logo i ustawienia programu mogą zostać pobrane w postaci pojedynczego pliku <code>.cantatebackup</code>.
+        </p>
+
+        <div style="background:#0f172a; border:1px solid #334155; border-radius:8px; padding:16px; margin:16px 0;">
+            <h4 style="margin:0 0 6px 0; font-size:14px; color:#38bdf8;">1. Pobierz kopię bazy na dysk:</h4>
+            <p style="font-size:11px; color:#94a3b8; margin:0 0 12px 0;">Plik zostanie natychmiast zapisany w Twojej przeglądarce.</p>
+            <a href="/api/backup/download" class="btn btn-primary" style="text-decoration:none;" download>Pobierz plik .cantatebackup</a>
+        </div>
+
+        <div style="background:#0f172a; border:1px solid #334155; border-radius:8px; padding:16px; margin-bottom:16px;">
+            <h4 style="margin:0 0 6px 0; font-size:14px; color:#f59e0b;">2. Wczytaj kopię z pliku:</h4>
+            <p style="font-size:11px; color:#94a3b8; margin:0 0 12px 0;">Wskaż plik .cantatebackup lub .zip zawierający kopię bazy.</p>
+            <input type="file" id="backupFileInput" accept=".cantatebackup,.zip,.json" style="margin-bottom:10px;">
+            <div>
+                <button class="btn btn-danger btn-small" id="btnUploadBackup">Przywróć dane z pliku</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Import Review Modal (Suspect author detection) -->
+<div class="modal-overlay" id="importModal">
+    <div class="modal-content" style="max-width:680px;">
+        <div class="modal-header">
+            <h3 class="modal-title">📥 Weryfikacja Importu Pieśni</h3>
+            <button class="close-btn" data-close="importModal">&times;</button>
+        </div>
+        <p style="font-size:12px; color:#38bdf8; margin:0 0 12px 0;">
+            Wklej tekst pieśni lub wskaż plik (.txt, .mufl z Holyrics). Możesz odznaczyć nieprawdziwego autora (np. 'Łysa Góra' zostanie automatycznie zapisany jako 'Nieznany').
+        </p>
+
+        <textarea id="importRawText" rows="8" placeholder="Wklej treść pieśni ze znacznikami [Zwrotka], [Refren] lub Holyrics..." style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#ffffff; font-size:12px; padding:8px; margin-bottom:10px;"></textarea>
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <input type="file" id="importFileInput" accept=".txt,.json,.mufl,.muf,.hly">
+            <button class="btn btn-primary" id="btnConfirmImport">Przeanalizuj i Dodaj</button>
+        </div>
+    </div>
+</div>
+
+<!-- 5. User Manual Modal -->
+<div class="modal-overlay" id="manualModal">
+    <div class="modal-content" style="max-width:800px;">
+        <div class="modal-header">
+            <h3 class="modal-title">📖 Instrukcja Obsługi CantatePresenter</h3>
+            <button class="close-btn" data-close="manualModal">&times;</button>
+        </div>
+        <div style="display:grid; grid-template-columns: 240px 1fr; gap:16px;">
+            <ul id="manualChapterList" style="list-style:none; padding:0; margin:0; border-right:1px solid #334155;">
+                <!-- Chapters -->
+            </ul>
+            <div id="manualChapterContent" style="max-height:60vh; overflow-y:auto; font-size:13px; line-height:1.5; color:#e2e8f0; white-space:pre-line;">
+                <!-- Content -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "name": "cantate-presenter-web",
+  "version": "1.0.0",
+  "description": "CantatePresenter Web — Bezpieczny prezenter pieśni i słowa dla wspólnot, parafii i zespołów (Node.js + PWA)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "worship",
+    "lyrics-presenter",
+    "church",
+    "equipes-notre-dame",
+    "holyrics",
+    "chords"
+  ],
+  "author": "CantatePresenter Community",
+  "license": "MIT",
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "archiver": "^7.0.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^8.0.0",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.8.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

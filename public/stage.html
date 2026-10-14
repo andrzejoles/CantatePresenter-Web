@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CantatePresenter — Pulpit Muzyka / Stage View</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body {
+            background: #0f172a;
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 12px;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        .stage-header {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .song-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #38bdf8;
+            margin: 0;
+        }
+        .song-meta {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        .chords-box {
+            background: #18181b;
+            border: 1px solid #3f3f46;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 14px;
+            color: #fef08a;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+        .slide-current {
+            background: #1e3a8a;
+            border: 2px solid #38bdf8;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .slide-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .slide-lyrics {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #ffffff;
+            white-space: pre-line;
+        }
+        .slide-next {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 12px;
+            opacity: 0.75;
+            margin-bottom: 60px;
+        }
+        .nav-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1e293b;
+            border-top: 1px solid #334155;
+            padding: 10px 16px;
+            display: flex;
+            gap: 12px;
+        }
+        .nav-btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            background: #2563eb;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        .nav-btn:active {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="stage-header">
+    <div>
+        <h1 class="song-title" id="stageSongTitle">Wybierz utwór...</h1>
+        <div class="song-meta" id="stageSongMeta"></div>
+    </div>
+    <div id="stageKeyBadge" style="font-size: 16px; font-weight: bold; color: #38bdf8;"></div>
+</div>
+
+<div class="chords-box" id="stageChordsBox" style="display: none;"></div>
+
+<div class="slide-current">
+    <div class="slide-label" id="currentLabel">AKTUALNY SLAJD</div>
+    <div class="slide-lyrics" id="currentLyrics">— Oczekiwanie na rozpoczęcie prezentacji —</div>
+</div>
+
+<div class="slide-next">
+    <div class="slide-label" style="color: #94a3b8;">NASTĘPNY SLAJD</div>
+    <div style="font-size: 14px; color: #cbd5e1; white-space: pre-line;" id="nextLyrics">—</div>
+</div>
+
+<div class="nav-footer">
+    <button class="nav-btn" id="prevBtn" style="background: #334155;">◀ Poprzedni</button>
+    <button class="nav-btn" id="nextBtn">Następny ▶</button>
+</div>
+
+<script type="module" src="/js/stage.js"></script>
+</body>
+</html>

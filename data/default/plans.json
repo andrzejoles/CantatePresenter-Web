@@ -1,0 +1,30 @@
+[
+  {
+    "items" : [
+      {
+        "id" : "106B7607-BEE2-44AC-8FC1-4213A1D70A93",
+        "note" : "",
+        "songId" : "70CA3138-49BA-418C-8699-CD0EE17FDAE8"
+      },
+      {
+        "id" : "D059294C-67CB-4759-8368-67E3BD6B245F",
+        "note" : "",
+        "songId" : "714C76BC-247D-4D57-8B55-2925F3EA3BA6"
+      },
+      {
+        "id" : "20FE66C0-A22A-4E5D-A4C5-5E30B2317EE4",
+        "note" : "",
+        "songId" : "289B9A8B-0A71-4469-A284-88A58428D7E6"
+      },
+      {
+        "id" : "4F67C27A-2E46-491D-93A4-E82BB474D91C",
+        "note" : "",
+        "songId" : "325B068C-F8FD-4A17-A9F2-7ECE5BDC84D8"
+      }
+    ],
+    "id" : "63A2ADC2-64C3-4437-BBCC-B57CA3372038",
+    "name" : "Niedziela - Zestaw pieśni",
+    "createdAt" : "2026-10-14T16:18:19Z",
+    "updatedAt" : "2026-10-14T16:18:19Z"
+  }
+]
