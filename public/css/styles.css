@@ -12,6 +12,7 @@
   --text-muted: #94a3b8;
   --border: #475569;
   --ui-scale: 1.0;
+  --projector-aspect-ratio: 16 / 9;
 }
 
 * {
@@ -159,6 +160,7 @@ body {
   background: var(--bg-app);
   border-left: 1px solid var(--border);
   padding: 14px;
+  overflow-y: auto;
 }
 
 /* Search Box */
@@ -311,27 +313,103 @@ body {
   line-height: 1.35;
 }
 
-/* Right Panel: Live Monitor */
-.live-monitor-box {
-  background: #0b0f19;
-  border: 2px solid var(--accent-cyan);
-  border-radius: 8px;
-  height: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 14px;
+/* Aspect Ratio Badges */
+.ratio-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  letter-spacing: 0.5px;
 }
 
-.next-slide-card {
-  background: var(--bg-surface);
-  border-radius: 6px;
-  padding: 10px;
-  margin-bottom: 14px;
+/* Right Panel: Aspect-Ratio Responsive Monitors */
+.live-monitor-box,
+.next-monitor-box {
+  width: 100%;
+  aspect-ratio: var(--projector-aspect-ratio, 16 / 9);
+  background: #000000;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  user-select: none;
+}
+
+.live-monitor-box {
+  border: 2px solid var(--accent-cyan);
+}
+
+.next-monitor-box {
+  border: 1px solid #475569;
+}
+
+.monitor-canvas {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.monitor-slide-text {
+  width: 100%;
+  white-space: pre-line;
+  word-break: break-word;
+  transition: opacity 0.1s ease-in-out;
+}
+
+.next-dim-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.next-label-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.monitor-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #f59e0b;
+  letter-spacing: 0.5px;
+}
+
+.monitor-empty-msg {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* Bottom Legend Bar */

@@ -1,7 +1,10 @@
 import { getLogoById } from './logoCatalog.js';
+import { calculateOptimalFontSize } from './autoFit.js';
 
 const container = document.getElementById('contentContainer');
 const badge = document.getElementById('slideBadge');
+
+let lastState = null;
 
 // Local BroadcastChannel for 0ms same-machine sync (without server roundtrip)
 const bc = new BroadcastChannel('cantate_live');
@@ -22,6 +25,7 @@ try {
 
 function renderState(state) {
   if (!state) return;
+  lastState = state;
 
   const { isLive, isBlackScreen, isClearText, currentSlide, settings } = state;
   const cfg = settings || {};
@@ -60,22 +64,36 @@ function renderState(state) {
   // 4. Live Slide Presentation
   const vAlign = cfg.verticalAlignment === 'top' ? 'flex-start' : (cfg.verticalAlignment === 'bottom' ? 'flex-end' : 'center');
   const tAlign = cfg.textAlignment || 'center';
-  const shadow = cfg.hasShadow ? 'text-shadow: 2px 2px 8px rgba(0,0,0,0.85);' : 'text-shadow: none;';
-  const weight = cfg.isBold ? 'bold' : 'normal';
-  const marginPct = (cfg.marginPercent || 0.07) * 100;
+  const shadow = cfg.hasShadow !== false ? 'text-shadow: 2px 2px 8px rgba(0,0,0,0.85);' : 'text-shadow: none;';
+  const weight = cfg.isBold !== false ? 'bold' : 'normal';
+  const marginPct = typeof cfg.marginPercent === 'number' ? cfg.marginPercent : 0.07;
+  const lineSpacing = typeof cfg.lineSpacingFactor === 'number' ? cfg.lineSpacingFactor : 1.15;
   const font = cfg.fontFamily || '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
 
+  const fontSize = calculateOptimalFontSize(currentSlide.text || '', window.innerWidth, window.innerHeight, {
+    fontFamily: font,
+    isBold: weight === 'bold',
+    lineSpacingFactor: lineSpacing,
+    marginPercent: marginPct,
+    minFontSize: 24,
+    maxFontSize: 260
+  });
+
+  const hPad = Math.max(16, Math.round(window.innerWidth * marginPct));
+  const vPad = Math.max(16, Math.round(window.innerHeight * marginPct));
+
   container.style.justifyContent = vAlign;
-  container.style.padding = `${marginPct}vh ${marginPct}vw`;
+  container.style.padding = `${vPad}px ${hPad}px`;
 
   const formattedText = (currentSlide.text || '').replace(/\n/g, '<br/>');
 
   container.innerHTML = `
     <div class="slide-text" style="
       font-family: ${font};
+      font-size: ${fontSize}px;
       color: ${cfg.textColorHex || '#FFFFFF'};
       font-weight: ${weight};
-      line-height: ${cfg.lineSpacingFactor || 1.15};
+      line-height: ${lineSpacing};
       text-align: ${tAlign};
       ${shadow}
     ">${formattedText}</div>
@@ -84,6 +102,10 @@ function renderState(state) {
   badge.textContent = currentSlide.label || '';
   badge.style.display = 'block';
 }
+
+window.addEventListener('resize', () => {
+  if (lastState) renderState(lastState);
+});
 
 // Initial fetch in case already running
 fetch('/api/live/state')

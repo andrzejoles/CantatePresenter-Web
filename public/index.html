@@ -89,17 +89,26 @@
 
         <!-- PANEL 3: LIVE MONITOR & PROJECTOR CONTROLS -->
         <section class="panel panel-right">
-            <div style="font-size:11px; font-weight:bold; color:#38bdf8; margin-bottom:8px;">
-                PODGLĄD NA ŻYWO (LIVE MONITOR)
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <div style="font-size:11px; font-weight:bold; color:#38bdf8;">
+                    PODGLĄD NA ŻYWO (LIVE MONITOR)
+                </div>
+                <span class="ratio-badge" id="liveRatioBadge">16:9</span>
             </div>
 
             <div class="live-monitor-box" id="liveMonitor">
-                <!-- Rendered Standby or Slide -->
+                <!-- Rendered Standby or Live Slide -->
             </div>
 
-            <div class="next-slide-card">
-                <div style="font-size:11px; font-weight:bold; color:#94a3b8; margin-bottom:4px;">NASTĘPNY SLAJD:</div>
-                <div id="nextSlideText" style="font-size:12px; color:#cbd5e1; white-space:pre-line;">— Koniec pieśni —</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; margin-top:8px;">
+                <div style="font-size:11px; font-weight:bold; color:#94a3b8;">
+                    PODGLĄD NASTĘPNEGO SLAJDU
+                </div>
+                <span class="ratio-badge" id="nextRatioBadge">16:9</span>
+            </div>
+
+            <div class="next-monitor-box" id="nextMonitor">
+                <!-- Rendered Next Slide Preview -->
             </div>
 
             <!-- Projector Control Buttons -->
@@ -192,6 +201,15 @@
                 <input type="text" id="settingFont" class="search-box" value="Segoe UI, sans-serif">
             </div>
             <div>
+                <label style="font-size:12px; font-weight:600;">Proporcje ekranu rzutnika:</label>
+                <select id="settingAspectRatio" class="search-box" style="height:34px;">
+                    <option value="16:9">16:9 (Panoramiczny standard)</option>
+                    <option value="16:10">16:10 (Mac / Laptop)</option>
+                    <option value="4:3">4:3 (Projektor tradycyjny)</option>
+                    <option value="21:9">21:9 (Ultrawide)</option>
+                </select>
+            </div>
+            <div>
                 <label style="font-size:12px; font-weight:600;">Kolor tekstu slajdów:</label>
                 <input type="color" id="settingTextColor" value="#ffffff" style="width:100%; height:34px; background:#0f172a; border:1px solid #334155; border-radius:6px;">
             </div>
@@ -199,9 +217,47 @@
                 <label style="font-size:12px; font-weight:600;">Kolor tła projekcji:</label>
                 <input type="color" id="settingBgColor" value="#000000" style="width:100%; height:34px; background:#0f172a; border:1px solid #334155; border-radius:6px;">
             </div>
-            <div style="display:flex; align-items:center; gap:8px; padding-top:20px;">
+            <div>
+                <label style="font-size:12px; font-weight:600;">Wyrównanie w pionie:</label>
+                <select id="settingVAlign" class="search-box" style="height:34px;">
+                    <option value="center">Środek (Center)</option>
+                    <option value="top">Góra (Top)</option>
+                    <option value="bottom">Dół (Bottom)</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size:12px; font-weight:600;">Wyrównanie tekstu:</label>
+                <select id="settingTAlign" class="search-box" style="height:34px;">
+                    <option value="center">Środek (Center)</option>
+                    <option value="left">Do lewej (Left)</option>
+                    <option value="right">Do prawej (Right)</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size:12px; font-weight:600;">Margines slajdu:</label>
+                <select id="settingMargin" class="search-box" style="height:34px;">
+                    <option value="0.04">4% (Wąski)</option>
+                    <option value="0.07">7% (Standardowy)</option>
+                    <option value="0.10">10% (Szeroki)</option>
+                    <option value="0.15">15% (Bardzo szeroki)</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size:12px; font-weight:600;">Interlinia (Line spacing):</label>
+                <select id="settingLineSpacing" class="search-box" style="height:34px;">
+                    <option value="1.0">1.0 (Kompaktowa)</option>
+                    <option value="1.15">1.15 (Standardowa)</option>
+                    <option value="1.3">1.3 (Zwiększona)</option>
+                    <option value="1.45">1.45 (Duża)</option>
+                </select>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
                 <input type="checkbox" id="settingBold" checked>
                 <label for="settingBold" style="font-size:12px;">Pogrubiony tekst (Bold)</label>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" id="settingShadow" checked>
+                <label for="settingShadow" style="font-size:12px;">Cień tekstu (Shadow)</label>
             </div>
         </div>
 

@@ -1,4 +1,5 @@
 import { LOGO_CATALOG, getLogoById } from './logoCatalog.js';
+import { calculateOptimalFontSize, parseAspectRatio, renderSlideCanvas } from './autoFit.js';
 
 // Application State
 let songs = [];
@@ -36,7 +37,9 @@ const currentSongTitle = document.getElementById('currentSongTitle');
 const currentSongMeta = document.getElementById('currentSongMeta');
 const slideCardsContainer = document.getElementById('slideCardsContainer');
 const liveMonitor = document.getElementById('liveMonitor');
-const nextSlideText = document.getElementById('nextSlideText');
+const nextMonitor = document.getElementById('nextMonitor');
+const liveRatioBadge = document.getElementById('liveRatioBadge');
+const nextRatioBadge = document.getElementById('nextRatioBadge');
 const chordsBar = document.getElementById('chordsBar');
 const chordsPreviewWrap = document.getElementById('chordsPreviewWrap');
 const transposeShiftLabel = document.getElementById('transposeShiftLabel');
@@ -91,8 +94,9 @@ async function loadSettings() {
   const res = await fetch('/api/settings');
   const data = await res.json();
   if (data.success) {
-    settings = data.settings;
+    settings = data.settings || {};
     if (settings.uiScale) setUiScale(settings.uiScale);
+    applySettings();
   }
 }
 
@@ -206,50 +210,109 @@ function renderCurrentSong() {
   });
 }
 
+function getEffectiveSettings() {
+  return {
+    fontFamily: settings.fontFamily || '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+    textColorHex: settings.textColorHex || '#ffffff',
+    backgroundColorHex: settings.backgroundColorHex || '#000000',
+    verticalAlignment: settings.verticalAlignment || 'center',
+    textAlignment: settings.textAlignment || 'center',
+    marginPercent: typeof settings.marginPercent === 'number' ? settings.marginPercent : 0.07,
+    lineSpacingFactor: typeof settings.lineSpacingFactor === 'number' ? settings.lineSpacingFactor : 1.15,
+    isBold: settings.isBold !== false,
+    hasShadow: settings.hasShadow !== false,
+    aspectRatio: settings.aspectRatio || '16:9',
+    activeLogoId: settings.activeLogoId || 'equipes_notre_dame'
+  };
+}
+
+function applySettings() {
+  const eff = getEffectiveSettings();
+  const parsed = parseAspectRatio(eff.aspectRatio);
+  document.documentElement.style.setProperty('--projector-aspect-ratio', parsed.css);
+  if (liveRatioBadge) liveRatioBadge.textContent = parsed.label;
+  if (nextRatioBadge) nextRatioBadge.textContent = parsed.label;
+  renderMonitors();
+}
+
 function renderLiveMonitor() {
+  if (!liveMonitor) return;
+  const eff = getEffectiveSettings();
+
   if (liveState.isBlackScreen) {
     liveMonitor.style.backgroundColor = '#000000';
-    liveMonitor.innerHTML = '<span style="color:#f59e0b; font-weight:bold; font-size:14px;">CZARNY EKRAN (B)</span>';
+    liveMonitor.innerHTML = `
+      <div class="monitor-status-badge">
+        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#f59e0b;"></span>
+        CZARNY EKRAN (B)
+      </div>
+    `;
     return;
   }
 
   if (liveState.isClearText) {
-    liveMonitor.style.backgroundColor = settings.backgroundColorHex || '#000000';
-    liveMonitor.innerHTML = '<span style="color:#f59e0b; font-weight:bold; font-size:14px;">TEKST UKRYTY (C)</span>';
+    liveMonitor.style.backgroundColor = eff.backgroundColorHex || '#000000';
+    liveMonitor.innerHTML = `
+      <div class="monitor-status-badge" style="color:#38bdf8;">
+        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#38bdf8;"></span>
+        TEKST UKRYTY (C)
+      </div>
+    `;
     return;
   }
 
   // Standby (No active slide or not live)
   if (!liveState.isLive || !currentSong || !currentSong.slides || !currentSong.slides[currentSlideIndex]) {
-    liveMonitor.style.backgroundColor = '#0b0f19';
-    const logo = getLogoById(settings.activeLogoId || 'equipes_notre_dame');
+    liveMonitor.style.backgroundColor = eff.backgroundColorHex || '#0b0f19';
+    const logo = getLogoById(eff.activeLogoId || 'equipes_notre_dame');
     liveMonitor.innerHTML = `
-      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <div style="width:58px; height:58px; margin-bottom:8px;">${logo.svg}</div>
-        <div style="font-weight:bold; font-size:14px; color:#ffffff;">CantatePresenter</div>
-        <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Wersja 1.0.0</div>
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:12px;">
+        <div style="width:44px; height:44px; margin-bottom:6px;">${logo.svg}</div>
+        <div style="font-weight:bold; font-size:13px; color:#ffffff; letter-spacing:0.5px;">CantatePresenter</div>
+        <div style="font-size:10px; color:#94a3b8; margin-top:2px;">Wersja 1.0.0 • Gotowy do projekcji</div>
       </div>
     `;
-    nextSlideText.textContent = '— Koniec pieśni —';
     return;
   }
 
   // Live Slide
   const slide = currentSong.slides[currentSlideIndex];
-  liveMonitor.style.backgroundColor = settings.backgroundColorHex || '#000000';
-  liveMonitor.innerHTML = `
-    <div style="color:${settings.textColorHex || '#ffffff'}; font-weight:${settings.isBold ? 'bold' : 'normal'}; font-size:14px; line-height:1.25; white-space:pre-line;">
-      ${escapeHTML(slide.text)}
-    </div>
-  `;
+  renderSlideCanvas(liveMonitor, slide, {
+    ...eff,
+    isDimmed: false,
+    showLabel: true,
+    label: slide.label || `Slajd ${currentSlideIndex + 1}`
+  });
+}
 
-  // Next Slide
-  if (currentSlideIndex + 1 < currentSong.slides.length) {
-    const next = currentSong.slides[currentSlideIndex + 1];
-    nextSlideText.textContent = `${next.label}:\n${next.text}`;
-  } else {
-    nextSlideText.textContent = '— Koniec pieśni —';
+function renderNextMonitor() {
+  if (!nextMonitor) return;
+  const eff = getEffectiveSettings();
+
+  if (!liveState.isLive || !currentSong || !currentSong.slides) {
+    nextMonitor.style.backgroundColor = '#0b0f19';
+    nextMonitor.innerHTML = '<div class="monitor-empty-msg">— Brak następnego slajdu —</div>';
+    return;
   }
+
+  const nextIndex = currentSlideIndex + 1;
+  if (nextIndex < currentSong.slides.length) {
+    const nextSlide = currentSong.slides[nextIndex];
+    renderSlideCanvas(nextMonitor, nextSlide, {
+      ...eff,
+      isDimmed: true,
+      showLabel: true,
+      label: nextSlide.label || `Następny (${nextIndex + 1})`
+    });
+  } else {
+    nextMonitor.style.backgroundColor = '#0b0f19';
+    nextMonitor.innerHTML = '<div class="monitor-empty-msg">— Koniec pieśni —</div>';
+  }
+}
+
+function renderMonitors() {
+  renderLiveMonitor();
+  renderNextMonitor();
 }
 
 function applyLiveState(state) {
@@ -266,8 +329,10 @@ function applyLiveState(state) {
   }
   if (state.settings) {
     settings = { ...settings, ...state.settings };
+    applySettings();
+  } else {
+    renderMonitors();
   }
-  renderLiveMonitor();
   renderCurrentSong();
 }
 
@@ -304,7 +369,7 @@ function broadcastState() {
     })
   }).catch(() => {});
 
-  renderLiveMonitor();
+  renderMonitors();
 }
 
 function sendAction(action) {
@@ -638,15 +703,35 @@ if (quickTextForm) {
 
 // Settings Modal & Logo Gallery
 document.getElementById('btnSettings').addEventListener('click', () => {
-  document.getElementById('settingFont').value = settings.fontFamily || 'Segoe UI, sans-serif';
-  document.getElementById('settingTextColor').value = settings.textColorHex || '#ffffff';
-  document.getElementById('settingBgColor').value = settings.backgroundColorHex || '#000000';
-  document.getElementById('settingBold').checked = settings.isBold !== false;
+  const eff = getEffectiveSettings();
+  const fontEl = document.getElementById('settingFont');
+  const aspectEl = document.getElementById('settingAspectRatio');
+  const textColEl = document.getElementById('settingTextColor');
+  const bgColEl = document.getElementById('settingBgColor');
+  const vAlignEl = document.getElementById('settingVAlign');
+  const tAlignEl = document.getElementById('settingTAlign');
+  const marginEl = document.getElementById('settingMargin');
+  const lineSpacingEl = document.getElementById('settingLineSpacing');
+  const boldEl = document.getElementById('settingBold');
+  const shadowEl = document.getElementById('settingShadow');
+
+  if (fontEl) fontEl.value = eff.fontFamily;
+  if (aspectEl) aspectEl.value = eff.aspectRatio;
+  if (textColEl) textColEl.value = eff.textColorHex;
+  if (bgColEl) bgColEl.value = eff.backgroundColorHex;
+  if (vAlignEl) vAlignEl.value = eff.verticalAlignment;
+  if (tAlignEl) tAlignEl.value = eff.textAlignment;
+  if (marginEl) marginEl.value = String(eff.marginPercent);
+  if (lineSpacingEl) lineSpacingEl.value = String(eff.lineSpacingFactor);
+  if (boldEl) boldEl.checked = eff.isBold;
+  if (shadowEl) shadowEl.checked = eff.hasShadow;
+
   openModal('settingsModal');
 });
 
 function renderLogoGallery() {
   const grid = document.getElementById('logoGalleryGrid');
+  if (!grid) return;
   grid.innerHTML = '';
   LOGO_CATALOG.forEach(logo => {
     const card = document.createElement('div');
@@ -664,6 +749,7 @@ function renderLogoGallery() {
     card.addEventListener('click', () => {
       settings.activeLogoId = logo.id;
       renderLogoGallery();
+      applySettings();
       broadcastState();
     });
     grid.appendChild(card);
@@ -671,10 +757,29 @@ function renderLogoGallery() {
 }
 
 document.getElementById('btnSaveSettings').addEventListener('click', async () => {
-  settings.fontFamily = document.getElementById('settingFont').value;
-  settings.textColorHex = document.getElementById('settingTextColor').value;
-  settings.backgroundColorHex = document.getElementById('settingBgColor').value;
-  settings.isBold = document.getElementById('settingBold').checked;
+  const fontEl = document.getElementById('settingFont');
+  const aspectEl = document.getElementById('settingAspectRatio');
+  const textColEl = document.getElementById('settingTextColor');
+  const bgColEl = document.getElementById('settingBgColor');
+  const vAlignEl = document.getElementById('settingVAlign');
+  const tAlignEl = document.getElementById('settingTAlign');
+  const marginEl = document.getElementById('settingMargin');
+  const lineSpacingEl = document.getElementById('settingLineSpacing');
+  const boldEl = document.getElementById('settingBold');
+  const shadowEl = document.getElementById('settingShadow');
+
+  if (fontEl) settings.fontFamily = fontEl.value.trim() || 'Segoe UI, sans-serif';
+  if (aspectEl) settings.aspectRatio = aspectEl.value;
+  if (textColEl) settings.textColorHex = textColEl.value;
+  if (bgColEl) settings.backgroundColorHex = bgColEl.value;
+  if (vAlignEl) settings.verticalAlignment = vAlignEl.value;
+  if (tAlignEl) settings.textAlignment = tAlignEl.value;
+  if (marginEl) settings.marginPercent = parseFloat(marginEl.value) || 0.07;
+  if (lineSpacingEl) settings.lineSpacingFactor = parseFloat(lineSpacingEl.value) || 1.15;
+  if (boldEl) settings.isBold = boldEl.checked;
+  if (shadowEl) settings.hasShadow = shadowEl.checked;
+
+  applySettings();
 
   await fetch('/api/settings', {
     method: 'POST',
@@ -685,6 +790,19 @@ document.getElementById('btnSaveSettings').addEventListener('click', async () =>
   closeModal('settingsModal');
   broadcastState();
 });
+
+// Auto-Fit Monitor Observer (Recalculates typography on panel/window resize)
+if (window.ResizeObserver) {
+  let roTimer = null;
+  const ro = new ResizeObserver(() => {
+    if (roTimer) cancelAnimationFrame(roTimer);
+    roTimer = requestAnimationFrame(() => {
+      renderMonitors();
+    });
+  });
+  if (liveMonitor) ro.observe(liveMonitor);
+  if (nextMonitor) ro.observe(nextMonitor);
+}
 
 // Backup Modal
 document.getElementById('btnBackup').addEventListener('click', () => openModal('backupModal'));
